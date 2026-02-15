@@ -1,0 +1,156 @@
+# Modelos de Arquitectura de Red
+## Modelo OSI
+Creado por la ISO en los años 80, es un modelo teórico y educativo. No se usa tal cual en la vida real, pero sirve como el estándar de referencia para que ingenieros y desarrolladores hablen el mismo idioma.
+- Explicación -> Aplicación en TCP/IP
+- Presentación -> Aplicación en TCP/IP
+- Sesión -> Aplicación en TCP/IP
+- Transporte
+- Red
+- Enlace de datos
+- Física
+
+## Modelo TCP/IP
+A diferencia del OSI, este es un modelo práctico. Es la arquitectura real sobre la que se construyó Internet. Es más sencillo y agrupa algunas funciones del modelo OSI para ser más eficiente.
+- Aplicación -> (Direcciones: Email, Sistema de archivos, Teléfono IP)
+- Transporte -> (Direcciones: Puertos) TCP/UDP
+- Red -> (Direcciones: Direcciones IP)
+- Enlace de datos -> (Direcciones: MAC Adress)
+- Física
+
+# Puertos
+Un puerto es un punto final de comunicación lógico en un sistema operativo. Es una interfaz de software que permite que una computadora diferencie entre diferentes tipos de tráfico.
+
+## Existen 65,535 puertos disponibles en total, y se dividen en tres categorías:
+- Puertos Bien Conocidos (0 - 1,023): Reservados para servicios estándar y protocolos esenciales (como el 80 para web o el 22 para SSH).
+- Puertos Registrados (1,024 - 49,151): Utilizados por aplicaciones específicas de empresas (como el 3306 para MySQL).
+- Puertos Dinámicos o Privados (49,152 - 65,535): Puertos temporales que usa tu propia computadora para establecer conexiones de salida.
+
+- Puerto,Protocolo,Descripción / Uso Común
+- 20,FTP-Data,Transferencia de datos de FTP.
+- 21,FTP,Control de comandos de FTP.
+- 22,SSH,Acceso remoto seguro (reemplazó a Telnet).
+- 23,Telnet,Acceso remoto inseguro (todo viaja en texto plano).
+- 25,SMTP,Envío de correos electrónicos.
+- 53,DNS,Resolución de nombres de dominio.
+- 80,HTTP,Tráfico web sin cifrar.
+- 110,POP3,Recepción de correos (descarga del servidor).
+- 143,IMAP,Recepción de correos (sincronización con el servidor).
+- 161,SNMP,Gestión y monitoreo de dispositivos de red.
+- 443,HTTPS,Tráfico web cifrado (SSL/TLS).
+- 445,SMB/CIFS,Compartir archivos e impresoras en Windows (famoso por vulnerabilidades como EternalBlue).
+- 1433,MSSQL,Microsoft SQL Server.
+- 3306,MySQL,Base de Datos MySQL / MariaDB.
+- 3389,RDP,Escritorio Remoto de Windows.
+- 5432,PostgreSQL,Base de Datos PostgreSQL.
+- 8080,HTTP-Proxy,Puerto alternativo para servidores web o proxies.
+
+# Anatomía de la Dirección MAC
+La dirección MAC (Media Access Control) es el identificador único e inalterable (en teoría) grabado en el hardware de red. Se compone de 48 bits, representados por 6 pares de dígitos hexadecimales.
+- OUI (Organizationally Unique Identifier): Los primeros 3 bytes (AA:BB:CC). Son asignados por la IEEE a los fabricantes (ej. Cisco, Apple, Intel). Al conocer estos dígitos, puedes saber qué marca de dispositivo está conectada a tu red.
+- NIC (Network Interface Controller): Los últimos 3 bytes (DD:EE:FF). Es el número de serie específico que el fabricante asigna a esa tarjeta de red en particular.
+
+## Ataques a nivel de Switch
+El Switch es el "cerebro" de la red local que aprende qué dirección MAC está conectada a cada uno de sus puertos físicos mediante una tabla llamada CAM Table. Los ataques buscan engañar o romper esta tabla.
+### MAC Spoofing
+El atacante cambia su dirección MAC de software para imitar la de un dispositivo legítimo (como una impresora o el gateway).
+- Objetivo: Engañar al switch para que envíe el tráfico destinado a la víctima hacia la máquina del atacante.
+- Defensa: Port Security. Se configura el switch para que solo acepte una dirección MAC específica (o un número limitado) por puerto. Si aparece una MAC distinta, el puerto se bloquea.
+### MAC Flooding
+Este es el ataque que mencionas donde se satura el switch con miles de direcciones MAC falsas en pocos segundos.
+- Cómo funciona: La tabla CAM del switch tiene un límite de memoria. Al llenarse con basura, el switch entra en un "modo de falla" (fail-open) y empieza a comportarse como un Hub.
+- Consecuencia: El switch reenvía todo el tráfico por todos sus puertos. El atacante ahora puede ver el tráfico de toda la red simplemente escuchando (sniffing), rompiendo la segmentación de seguridad.
+
+# El formato DDN (Dotted Decimal Notation o Notación Decimal con Puntos) 
+Es la forma estándar en la que escribimos las direcciones IPv4 para que sean fáciles de leer y recordar por los seres humanos.
+
+## De Binario a Decimal
+- Internamente, las computadoras solo entienden números binarios. Una dirección IPv4 tiene exactamente 32 bits (32 ceros o unos).
+- Binario: 11000000.10101000.00000001.00000000
+- DDN: 192.168.1.0
+
+## Estructura de Octetos
+- La dirección se divide en 4 grupos llamados octetos (porque cada uno tiene 8 bits). Estos grupos se separan por puntos.
+- Cada octeto puede representar un valor decimal entre 0 y 255. Por lo tanto, el rango total en formato DDN va desde 0.0.0.0 hasta 255.255.255.255.
+
+## ¿Por qué es importante?
+El formato DDN nos permite identificar rápidamente:
+- La Red: Los primeros números (normalmente).
+- El Host: Los últimos números (normalmente).
+
+## ARP Poisoning (Envenenamiento de caché)
+Este ataque vincula la dirección IP de la víctima con la dirección MAC del atacante.
+1. El problema: La confianza del protocolo ARP
+- El protocolo ARP (Address Resolution Protocol) se encarga de traducir direcciones IP (Capa 3) a direcciones MAC (Capa 2).
+Cuando una computadora quiere hablar con otra, grita a toda la red: "¿Quién tiene la IP 192.168.1.1?". El dueño de esa IP responde: "Yo soy, mi MAC es AA:BB:CC...".
+- La falla: Las computadoras están programadas para aceptar respuestas ARP aunque no hayan hecho la pregunta. Además, no verifican si quien responde es quien dice ser.
+
+2. El proceso del ataque (Paso a paso)
+Imagina que en una red están la Víctima, el Router y el Atacante.
+- El Engaño: El atacante envía un mensaje ARP falso a la Víctima diciendo: "La IP del Router ahora está asociada a MI dirección MAC".
+- El Doble Engaño: Simultáneamente, el atacante envía un mensaje ARP al Router diciendo: "La IP de la Víctima ahora está asociada a MI dirección MAC".
+- El Resultado: Tanto la víctima como el router actualizan su "caché ARP" (una pequeña tabla de memoria). Ahora, cuando la víctima quiere ir a Internet, le envía los datos al atacante pensando que es el router.
+
+# Three-Way Handshake (o saludo de tres vías) 
+- Es el proceso fundamental que utiliza el protocolo TCP para establecer una conexión fiable entre dos dispositivos antes de que comience el intercambio de datos reales. 
+- Su objetivo principal es sincronizar los números de secuencia y confirmar que ambos extremos están listos para comunicarse.
+
+## Paso 1: SYN (Synchronize)
+- **Acción:** El Cliente (A) envía un paquete con la bandera SYN activa.
+- **Propósito:** "Hola, quiero establecer una conexión contigo. Aquí tienes mi número de secuencia inicial (ISN) para empezar a contar los datos".
+- **Estado:** El cliente entra en estado SYN-SENT.
+
+## Paso 2: SYN / ACK (Synchronize / Acknowledge)
+- **Acción:** El Servidor (B) responde con un paquete que tiene activas las banderas SYN y ACK.
+- **Propósito:** "Recibido (ACK). Yo también estoy de acuerdo en hablar contigo. Aquí tienes mi propio número de secuencia para que tú también lleves la cuenta".
+- **Estado:** El servidor entra en estado SYN-RECEIVED.
+
+## Paso 3: ACK (Acknowledge)
+- **Acción:** El Cliente (A) envía un último paquete con la bandera ACK.
+- **Propósito:** "Entendido, recibí tu número de secuencia. ¡Todo listo, empecemos a enviar datos!".
+- **Estado:** Ambos dispositivos entran en estado ESTABLISHED.
+
+# Social engineering
+- Manipula a las personas para que entreguen información confidencial o realicen acciones que comprometan la seguridad.
+- A diferencia de los ataques técnicos que buscan fallos en el código, la ingeniería social explota el "eslabón más débil" de la cadena de seguridad: el ser humano.
+
+## Phishing
+- **Método:** Correo masivo fingiendo ser una agencia o marca conocida.
+- **Objetivo:** Robo de credenciales genéricas (Netflix, bancos) y distribución de malware a gran escala.
+## Spear Phishing
+- **Método:** Mensaje personalizado tras estudiar a una víctima específica.
+- **Objetivo:** Acceso a sistemas críticos de una empresa o robo de información confidencial de un proyecto
+## Whaling
+- **Método:** Comunicación de alto nivel (legal/financiera) dirigida a ejecutivos.
+- **Objetivo:** Fraude financiero masivo (transferencias de dinero) o espionaje corporativo de alto valor
+## Vishing
+- **Método:** Llamada telefónica persuasiva (voz).
+- **Objetivo:** Obtener códigos de verificación (2FA) en tiempo real o engañar a la víctima para que realice una transferencia.
+## Smishing
+- **Método:** Mensajes de texto (SMS) o WhatsApp con enlaces urgentes.
+- **Objetivo:** Secuestro de cuentas de mensajería o robo de datos de tarjetas de crédito/débito.
+## Dumpster Diving
+- **Método:** Búsqueda en basura física (papeles) o digital (discos viejos).
+- **Objetivo:** Recolección de inteligencia (nombres de empleados, facturas, contraseñas anotadas) para preparar un ataque mayor.
+## Tailgating
+- **Método:** Entrar a un sitio físico siguiendo a alguien con acceso.
+- **Objetivo:** Acceso físico a servidores, robo de hardware o instalación de dispositivos de espionaje dentro de la oficina.
+
+# Algoritmos de Cifrado (Encryption)
+El cifrado es el proceso de transformar información (texto plano) en un formato ilegible (texto cifrado) utilizando una llave. Su objetivo principal es la Confidencialidad. Es un proceso reversible: si tienes la llave, puedes recuperar el mensaje original.
+Existen dos tipos principales:
+- **Simétrico:** Se usa la misma llave para cifrar y descifrar (es rápido, ej. AES).
+- **Asimétrico:** Se usan dos llaves: una Pública para cifrar y una Privada para descifrar.
+
+# Hashing (Resumen Digital)
+El hashing transforma una entrada de cualquier tamaño en una cadena de caracteres de longitud fija. A diferencia del cifrado, el hashing es una función de una sola vía: es matemáticamente imposible (o extremadamente difícil) volver al dato original a partir del resultado. Su objetivo es la Integridad.
+- **Propiedad clave:** Si cambias una sola letra en un archivo de 1 GB, su "Hash" cambiará por completo (Efecto avalancha).
+- **Ejemplos:** SHA-256, MD5.
+- **Uso común:** Guardar contraseñas en bases de datos. No se guarda tu clave "1234", sino su hash, para que ni el administrador pueda verla.
+
+# Codificación (Encoding)
+La codificación no es una medida de seguridad. Su objetivo es la Usabilidad y Compatibilidad, no la confidencialidad. Es el proceso de convertir datos de un formato a otro para que diferentes sistemas puedan leerlos correctamente.
+- **Propiedad clave:** No requiere llaves ni secretos. Cualquier persona que conozca el algoritmo puede revertirlo instantáneamente.
+- **Ejemplos:** Base64 (muy usado para enviar imágenes por texto), ASCII, Unicode (UTF-8).
+- **Uso común:** Asegurar que los caracteres especiales de un idioma se vean bien en cualquier navegador web.
+
+
