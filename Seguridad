@@ -1,0 +1,33 @@
+#Tríada CIA (El "ADN" de la Seguridad)
+Cada decisión de seguridad que se toma en una empresa debe evaluarse bajo estos tres pilares. Si uno falla, la seguridad se desmorona.
+## Confidencialidad (Confidentiality): 
+- No se trata solo de contraseñas. Incluye la clasificación de datos (saber qué es público y qué es secreto) y el control de acceso basado en roles (RBAC).
+- Herramientas: Cifrado (AES-256), túneles VPN y protocolos TLS para datos en tránsito.
+## Integridad (Integrity): 
+- Garantiza que el mensaje que enviaste sea exactamente el que recibió el destinatario. Se busca evitar el "ruido" en la comunicación o la manipulación malintencionada.
+- Herramientas: Funciones Hash (como SHA-256). Si cambias un solo bit de un archivo, su "huella digital" (hash) cambia por completo, alertando que fue alterado.
+##Disponibilidad (Availability)
+- Un sistema seguro que no se puede usar es inútil. Esto implica tener planes de recuperación ante desastres y evitar puntos únicos de fallo.
+- Herramientas: Sistemas de respaldo (backups), balanceadores de carga y mantenimiento preventivo de hardware.
+
+# Triángulo de la Usabilidad (Seguridad, Usabilidad y Funcionalidad)
+Este concepto ilustra que existe una tensión natural entre estos tres puntos. Si mueves el equilibrio hacia una esquina, las otras suelen verse afectadas.
+- Seguridad: Restricciones y protecciones. Imagina una base de datos que requiere 5 contraseñas, escaneo de retina y solo se puede usar en una habitación blindada. Es segura, pero su usabilidad y funcionalidad son nulas.
+- Usabilidad: Qué tan fácil es para el usuario operar el sistema. Un software que hace de todo y se conecta con mil apps externas. Es útil, pero cada conexión es una puerta abierta, por lo que su seguridad es baja.
+- Funcionalidad: Qué tantas características o herramientas ofrece el sistema. Crear sistemas donde la seguridad sea "transparente". Por ejemplo, usar sensores de huella digital en lugar de obligar al usuario a escribir una clave de 20 caracteres cada vez que desbloquea su teléfono.
+
+# Gestión de Riesgos: Amenaza, Vulnerabilidad e Impacto
+Riesgo: Es la probabilidad de que una amenaza explote una vulnerabilidad multiplicada por el impacto que esto causaría.
+El riesgo se compone de los siguientes elementos:
+- Vulnerabilidad: Una debilidad o fallo en el sistema (un puerto abierto, un software sin actualizar, una contraseña débil).
+- Amenaza: Cualquier evento potencial que pueda explotar una vulnerabilidad (un hacker, un virus, un desastre natural).
+- Impacto: El daño o la pérdida que ocurre si la amenaza llega a concretarse (pérdida de dinero, daño a la reputación, robo de datos).
+
+se calcula de la  siguiente forma: riesgo = Probabilidad (Amenaza * Vulnerabilidad) \ Impacto
+
+# MFA (Multi-Factor Authentication)
+La Autenticación de Múltiples Factores es una medida de seguridad que requiere que el usuario proporcione dos o más pruebas para verificar su identidad. Estas pruebas se dividen en tres categorías:
+- Algo que sabes: Una contraseña o PIN.
+- Algo que tienes: Un código enviado al celular, un token físico o una llave de seguridad.
+- Algo que eres: Biometría (huella digital, reconocimiento facial).
+
